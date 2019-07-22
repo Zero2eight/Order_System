@@ -1,0 +1,290 @@
+{% load static %}
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<title>菜单</title>
+	<meta charset='utf-8'>
+</head>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+</script>
+<div id="logoff">
+	<p><span class="badge badge-secondary">工号：{{ wid }} 姓名：{{ name }} </span> <a href="{% url 'menus:home' %}" class="badge badge-primary">HOME</a> <a href="personalhome" class="badge badge-info">个人记录</a> <a href="logoff" class="badge badge-danger">登出</a></p>
+</div>
+<hr/>
+<h2><span class="badge badge-secondary">菜单如下</span></h2>
+<body id="page">
+	<div class="container">
+	<div class="row">
+	<div class="col-6">
+	<table class="table table-hover" >
+		<thead>
+		<tr>
+			<th class='hide'>pk</th>
+			<th scope="col">序号</th>
+			<th scope="col">菜名</th>
+			<th scope="col">描述</th>
+			<th scope="col">单价</th>
+			<th class='hide'>总价</th>
+			<th scope="col">操作</th>				
+		</tr>
+		</thead>
+		<tbody>
+	{% for food in Food_list %}
+		{% if food.active %}
+		<tr>
+			<td class='hide' id='{{ food.pk }}pk'>{{ food.pk }}</td>
+			<th scope="row">{{ forloop.counter }}</th>
+			<td id='{{ food.pk }}n'>{{ food.name }}</td>
+			<td>{{ food.description }}</td>
+			<td id='{{ food.pk }}p'>{{ food.price }}</td>
+			<td class='hide' id='{{ food.pk }}tp'>0</td>
+			<td>
+				<button class="btn btn-primary opb" onclick="subtract('{{ food.pk }}')">-</button>
+				<!-- <input class='key' id='{{ food.pk }}' type="number" value='0' step='1' onchange="onModify(this)"/>  -->
+				<button class="btn btn-primary opb" onclick="add('{{ food.pk }}')">+</button>
+			</td>
+		</tr>
+		{% endif %}
+	{% endfor %}
+		</tbody>
+	</table>
+	</div>
+	</div>
+	</div>
+</body>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
+
+<form method="POST" action="finished" >
+<div class="container">
+<div class="row no-gutters">
+<div class="col-12">
+{% csrf_token %}
+<div id="fix">
+	<div class="accordion" id="accordionExample">
+	<div class="card">
+	<!-- 要被上拉部分 -->
+	<div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+	<div class="card-body">
+	<div id='orderlist'>
+		<p class="h">已点</p>
+		{% for order in order_list %}
+		<p id="{{ order.food.pk }}parent" class="orderelem">{{ order.food.name }} {{ order.food.price }} × 
+			<input name="{{ order.food.pk }}ordered" class='key' id="{{ order.food.pk }}" value="{{ order.quantity }}" type="number" onchange="onModify(this)">
+			<input name="{{ order.food.pk }}requirement" class='requirement' type="text" placeholder="在此输入对此菜品的要求" value={{ order.requirement }}>
+		</p>
+		{% endfor %}
+	</div>
+	</div>
+	</div>
+	<!--  -->
+	<!-- 拉动触发部分 -->
+	<div class="card-header" id="headingOne">
+	<div id="clickforslide">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          总价（左键单击此处可以展开/关闭点菜信息）: <b id='total'>{{ total_price }}</b>
+        </button>		
+	</div>
+	</div>
+	<!--  -->
+	</div>
+	</div>
+	<div class="row no-gutters justify-content-between">
+	<div class="col-auto">
+	<button onclick="clearall()" class="btn btn-outline-danger" type="button">清空</button>
+	</div>
+	<div class="col-auto">
+	<input class="btn btn-outline-info" type="submit" value="提交">
+	</div>
+	</div>
+	<div class="row">
+	<div class="col-12">
+		<li class="list-group-item">注：如需取消点单，清空后提交才可被记录</li>
+	</div>
+	</div>
+</div>
+</div>
+</div>
+</div>
+</form>
+
+<script>
+	function add(id) {
+		var obj=document.getElementById(id);
+		if (obj) { //如果该对象已经存在
+			var quatity=Number(obj.value);
+			var newQuantity=quatity+1;
+			obj.value=String(newQuantity);
+			calPrice(id);
+			calTotal();
+		}
+		else { //如果不存在
+			var para=document.createElement("p");
+			var paraText=document.getElementById(id+'n').innerHTML+' '+document.getElementById(id+'p').innerHTML+' × ';
+			var paraTextNode=document.createTextNode(paraText);
+			para.appendChild(paraTextNode);
+			para.className="orderelem";
+			var inp=document.createElement("input");
+			inp.className="key";
+			inp.id=id;
+			inp.value=1;
+			inp.type="number";
+			inp.name=id+'ordered';
+			inp.addEventListener("change", function(){ onModify(this);});
+			var inp2=document.createElement("input");
+			inp2.name=id+"requirement"
+			inp2.className="requirement"
+			inp2.type="text"
+			inp2.placeholder="在此输入对此菜品的要求"
+			para.appendChild(inp);
+			para.appendChild(document.createTextNode(" "));
+			para.appendChild(inp2);
+			para.id=id+"parent"
+			var ol=document.getElementById('orderlist');
+			ol.appendChild(para);
+			calPrice(id);
+			calTotal();
+		}
+		}
+	function subtract(id) {
+		var obj=document.getElementById(id);
+		if (obj) {
+			var quatity=Number(obj.value);
+			if (quatity>1) { //如果剩余数量大于1
+				var newQuantity=quatity-1;
+				obj.value=String(newQuantity);
+				calPrice(id);
+			}
+			else {
+				var parent = document.getElementById(id+"parent");
+				//var child = document.getElementById(id);
+				//parent.removeChild(child);
+				parent.parentNode.removeChild(parent);
+				calPrice(id)
+			}
+			
+			calTotal();
+		}
+
+		
+	}
+	function calPrice(id) {
+		obj=document.getElementById(id+'tp');
+		try {
+			quantity=Number(document.getElementById(id).value); 
+			price=Number(document.getElementById(id+'p').innerHTML);
+			price=quantity*price;
+			obj.innerHTML=String(price);
+		} catch(err) {
+			price=0
+			obj.innerHTML=String(price);
+		}
+	}
+	function calTotal() {
+		obj=document.getElementById('total');
+		totalPrice=0;
+		content_list=document.getElementsByClassName('key')
+		for (var i=0;i<content_list.length;i++) {
+			id=content_list[i].id;
+			quantity=Number(document.getElementById(id).value);
+			price=Number(document.getElementById(id+'p').innerHTML);
+			totalPrice=totalPrice+quantity*price};
+		obj.innerHTML=String(totalPrice);
+	}
+	function onModify(self) {
+		var quantity=self.value;
+		var id=self.id
+		if (quantity<=0) {
+				var parent = document.getElementById(id+"parent");
+				var child = document.getElementById(id);
+				parent.removeChild(child);
+				parent.parentNode.removeChild(parent);
+		}
+		calPrice(id)
+		calTotal()
+	}
+	function clearall() {
+		$(".orderelem").remove();
+		$("td:nth-child(6)").text('0');
+		calTotal();
+	}
+</script>
+<style>
+	#clearbutton {
+		bottom:15px;
+		position:fixed;
+		right:300px;
+		z-index:1
+	}
+	#cleardeclair {
+		bottom:10px;
+		position:fixed;
+		right:80px;
+	}
+	.hide {
+			display:none;
+	}
+	#fix 
+	{
+		<!-- border-style:double; -->		
+		margin:5px
+		width:400px;
+		right:5px;
+		bottom:10px;
+		position:fixed;
+	}
+	#orderlist
+	{	
+		height:200px;
+		overflow:scroll;
+	}
+	div p
+	{
+		text-align:right;
+	}
+	#submit
+	{	
+		width:50px;
+		margin:5px;
+		right:5px;
+		margin-left:300px;
+	}
+	#logoff
+	{
+		text-align:right;
+	}
+	input.key
+	{ 
+		width:40px;
+	}
+	.opb {
+		width:40px;
+		text-align:center;
+	}
+	.requirement {
+		width:200px;
+	}
+</style>
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

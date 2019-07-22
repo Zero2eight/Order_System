@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<head>
+<title>管理员界面</title>
+<meta charset='utf-8'>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+</script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<div id="inform">
+	<p><span class="badge badge-secondary">管理员界面 工号：{{ wid }} 姓名：{{ name }} </span> <a href="{% url 'menus:home' %}" class="badge badge-primary">HOME</a> <a href="personalhome" class="badge badge-primary">个人记录</a> <a href="logoff" class="badge badge-danger">登出</a></p>
+</div>
+<hr/>
+<h2 id="head">
+	<span class="badge badge-secondary">管理员页面</span>
+</h2>
+<hr/>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-1">
+		</div>
+		<div class="col-8">
+			<body>
+			<form method="POST" action="manage_menus">
+				{% csrf_token %}
+				<br/>
+				<div class="table-div">
+				<table border='1' text-align="center" class="table table-hover">
+					<thead>
+					<tr class="head">
+						<th width="70px" scope="col">序号</th>
+						<th width="100px" scope="col">菜名</th>
+						<th width="100px" scope="col">所属餐厅</th>
+						<th width="100px" scope="col">价格</th>
+						<th width="100px" scope="col">描述</th>
+						<th width="100px" scope="col">是否可点</th>
+						<th width="100px" scope="col" class="NONE">flag</th>
+						
+					</tr>
+					</thead>
+				{% for food in Food_active %}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td>{{ food.name }}</td>
+						<td>{{ food.restaurant }}</td>
+						<td>{{ food.price }}</td>
+						<td>{{ food.discription }}</td>
+						<td>
+							<div class="input-group mb-3">
+							  <select class="custom-select" id="inputGroupSelect01">
+								<option selected>可点</option>
+								<option value="1">不可点</option>
+							  </select>
+							</div>
+						</td>
+						<td class="NONE">not_yet</td>
+					</tr>
+				{% endfor %}
+				
+				</table>
+				</div>
+			</form>
+			</body>
+		</div>
+		<div class="col-2">
+		</div>
+	</div>
+</div>
+<script>
+
+</script>
+<style>
+	.NONE {
+		display:none;
+	}
+	.list {
+		margin:1px;
+	}
+	#inform {
+		text-align:right;
+	}
+	.head {
+		background-color: #cae8ca;
+	}
+	.table {
+		table-layout:fixed;
+	}
+	.alltp {
+		left:20px;
+		font-size:20px;
+		line-height:22px;
+		width:200px;
+	}
+</style>

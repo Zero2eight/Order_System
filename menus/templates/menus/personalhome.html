@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<title>
+	个人页
+</title>
+</head>
+<body>
+<div id="inform">
+	<p><span class="badge badge-secondary">工号：{{ wid }} 姓名：{{ name }} </span> <a href="{% url 'menus:home' %}" class="badge badge-primary">HOME</a> <a href="menus" class="badge badge-primary">菜单</a> <a href="logoff" class="badge badge-danger">登出</a></p>
+</div>
+<hr/>
+<h2 id="head">
+	<span class="badge badge-secondary">个人纪录页面</span>
+</h2>
+<hr/>
+<div class="container">
+<div class="row">
+<div class="col-6">
+<form method="POST" action="personalhome">
+	{% csrf_token %}
+	<div class="input-group mb-3">
+	<div class="input-group-prepend">
+	<span class="input-group-text form-control" id="basic-addon1" aria-describedby="basic-addon1">请选择日期</span>
+	</div>
+	<input name='selectdate' id='date' type="date" value="{{ date_time }}"/>
+	<input type='submit' value='确定'/>
+	</div>
+</form>
+</div>
+</div>
+<div class="row">
+<div class="col-6">
+	<h3>{{ date_time }}</h3>
+	<table class="table table-hover" border='1' text-align="center">
+		<thead>
+		<tr>
+			<th scope="col">菜名</th>
+			<th scope="col">下单数量</th>
+			<th scope="col">单价</th>
+			<th scope="col">总价</th>
+			<th scope="col">要求</th>
+		</tr>
+		</thead>
+		<tbody>
+	{% for order in order_list %}
+		<tr>
+			<td>{{ order.food.name }}</td>
+			<td>{{ order.quantity }}</td>
+			<td>{{ order.food.price }}</td> 
+			<td class='totalprice'>{{ order.totalprice }}</td> 
+			<td>{{ order.requirement }}</td>
+		</tr>
+	{% endfor %}
+		</tbody>
+	</table>
+	<p>全部总价: <b id='tp'></b>元</p>
+</div>
+</div>
+</div>
+</body>
+	<script>
+		function getDate(id) {
+			var obj=document.getElementById(id);
+			console.log(obj.value)
+			var now=new Date();
+			var date=now.toISOString()
+			obj.value=date.substring(0,10)
+			<!-- obj.innerHTML=Date(); -->
+			
+		}
+		function totalprice() {
+			var objlist=document.getElementsByClassName('totalprice');
+			var tp=0;
+			for (i=0;i<objlist.length;i++) {
+				tp=tp+Number(objlist[i].innerHTML);
+			}
+			var obj=document.getElementById('tp')
+			obj.innerHTML=tp
+		}
+		//getDate('date')
+		totalprice()
+	</script>
+
+<style>
+	#inform {
+		text-align:right
+	}
+</style>
+

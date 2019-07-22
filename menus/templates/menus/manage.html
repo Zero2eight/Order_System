@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<head>
+<title>管理员界面</title>
+<meta charset='utf-8'>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+</script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</head>
+<div id="inform">
+	<p><span class="badge badge-secondary">管理员界面 工号：{{ wid }} 姓名：{{ name }} </span> <a href="{% url 'menus:home' %}" class="badge badge-primary">HOME</a> <a href="personalhome" class="badge badge-primary">个人记录</a> <a href="logoff" class="badge badge-danger">登出</a></p>
+</div>
+<hr/>
+<h2 id="head">
+	<span class="badge badge-secondary">管理员页面</span>
+</h2>
+<hr/>
+<body>
+<form method="POST" action="manage">
+	{% csrf_token %}
+	<div class="container">
+	<div class="row">
+	<div class="col-auto">
+	<div class="input-group mb-3">
+	<div class="input-group-prepend">
+	<span class="input-group-text form-control" id="basic-addon1" aria-describedby="basic-addon1">检索开始日期： </span>
+	</div>
+	<input name='startdate' id='date1' type="date" value="{{ date_time1 }}"/>
+	</div>
+	</div>
+	<div class="col-auto">
+		<b> To </b>
+	</div>
+	<div class="col-auto">
+	<div class="input-group mb-3">
+	<div class="input-group-prepend">
+	<span class="input-group-text form-control" id="basic-addon1" aria-describedby="basic-addon1">检索结束日期：</span>
+	</div>
+	<input name='enddate' id='date2' type="date" value="{{ date_time2 }}"/>
+	</div>
+	</div>
+	<div class="col-auto">
+	<input type='submit' value='确定'/> {{ download|safe }}
+	</div>
+	</div>
+	</div>
+	</p>
+	<hr/>
+	<h3>检索日期：{{ date_time1 }} --- {{ date_time2 }}</h3>
+	<br/>
+	<div class="table-div">
+	<table border='1' text-align="center" class="table table-hover">
+		<thead>
+		<tr class="head">
+			<th width="30px"><input id='all' name="all" type="checkbox" value="全选" /></th>
+			<th width="70px" scope="col">工号</th>
+			<th width="100px" scope="col">姓名</th>
+		{% for d in datelist %}
+			<th class="date" scope="col" width="150px">{{ d }}</th>
+		{% endfor %}
+			<th width="100px" scope="col">总消费额</th>
+		</tr>
+		</thead>
+	{% for person in personlist %}
+		<tr id={{ person.work_id }}>
+			<td><input id='{{ person.work_id }}' class="single" name='selectedperson' type="checkbox" value="{{ person.work_id }}" /></th>
+			<td>{{ person.work_id }}</td>
+			<td>{{ person.name }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	</div>
+</form>
+</body>
+<script>
+	$(document).ready(function(){
+		{% for elem in relationcontent.inside %}
+		<!-- elem是某个人在选中天数内点餐的所有信息 -->
+			{% for d in elem.inside %}
+			<!-- d是这个人在特定的某一天点餐的所有信息 -->
+				var string='{% for f in d.inside %}<p class="list">{{ f.food }} {{ f.food.price }}<b> X </b>{{ f.quantity }}</p>{% endfor %}<p class="{{ elem.tag }}inform">当日总消费：{{ d.tp }}</p>';
+				$("#{{ elem.tag }}").append('<td>'+string+'</td>');
+			{% endfor %}
+			var tp=0
+			for (var i=0;i<$('.{{ elem.tag }}inform').length;i++) {
+				tp=tp+Number($('.{{ elem.tag }}inform')[i].innerHTML.slice(6,))
+			}
+			$("#{{ elem.tag }}").append('<td class="personal-tp" width="100px">'+String(tp)+'</td>');
+		{% endfor %}
+		var alltp=0
+		for (var i=0;i<$('.personal-tp').length;i++) {
+				alltp=alltp+Number($('.personal-tp')[i].innerHTML)
+			}
+		$('table').before('<span class="badge badge-pill badge-primary alltp">'+'总消费：'+String(alltp)+'元'+'</span><br/><br/>')
+		$('#all').click(function() {
+			if ($('#all')[0].checked) {
+				for (var i=0;i<$('.single').length;i++){
+					$('.single')[i].checked=true;
+				}
+			}
+			else {
+				for (var i=0;i<$('.single').length;i++){
+					$('.single')[i].checked=false;
+				}
+			}
+		})		
+	});
+</script>
+<style>
+	.list {
+		margin:1px;
+	}
+	#inform {
+		text-align:right;
+	}
+	.head {
+		background-color: #cae8ca;
+	}
+	.table {
+		table-layout:fixed;
+	}
+	.alltp {
+		left:20px;
+		font-size:20px;
+		line-height:22px;
+		width:200px;
+	}
+</style>

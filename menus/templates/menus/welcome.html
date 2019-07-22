@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>欢迎</title>
+<head>
+	<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+	</script>
+</head>
+<div id="inform">
+	<p>欢迎 工号：{{ wid }} 姓名：{{ name }} <a href="logoff">登出</a></p>
+</div>
+<div class="left column">
+</div>
+<div class="middle column">
+	<div id="menus">
+		<p class="content"><b>菜单</b></p>
+	</div>
+	<div id="personal">
+		<p class="content"><b>个人页面</b></p>
+	</div>
+	<div id="manage">
+		<p class="content"><b>管理员页面（需管理员权限）</b></p>
+	</div>
+</div>
+<div class="right column">
+</div>
+<style>
+#inform {
+	background-color:#b0c4de;
+	text-align:right;
+	margin-bottom:10%;
+}
+.column {
+  float: left;
+  padding: 10px;
+}
+.column.left {
+	width:30%;
+}
+.column.middle {
+	width:40%;
+	top:3000px;
+}
+#menus {
+	border-radius: 10px;
+	font-family:YaHei;
+	line-height:50px;
+	height:50px;
+	background-color:#b0c4de;
+	text-align:center;
+}
+#menus:hover {
+	font-family:YaHei;
+	line-height:60px;
+	height:60px;
+	background-color:Yellow;
+	text-align:center;
+	cursor:pointer;
+}
+#personal {
+	border-radius: 10px;
+	font-family:YaHei;
+	line-height:50px;
+	height:50px;
+	background-color:green;
+	text-align:center;
+}
+#personal:hover {
+	font-family:YaHei;
+	line-height:60px;
+	height:60px;
+	background-color:Yellow;
+	text-align:center;
+	cursor:pointer;
+}
+#manage {
+	border-radius:10px;
+	font-family:YaHei;
+	line-height:50px;
+	height:50px;
+	background-color:red;
+	text-align:center;
+}
+#manage:hover {
+	font-family:YaHei;
+	line-height:60px;
+	height:60px;
+	background-color:Yellow;
+	text-align:center;
+	cursor:pointer;
+}
+.middle {
+	
+	top:500px;
+}
+</style>
+<script>
+$(document).ready(function(){
+	$("#menus").click(function(){
+		self.location.href="menus"
+	});
+	$("#personal").click(function(){
+		self.location.href="personalhome"
+	});
+	$("#manage").click(function(){
+		self.location.href="manage"
+	});
+});
+</script>

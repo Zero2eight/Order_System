@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+	个人页
+</title>
+<h1 id="head">
+	请选择日期
+</h1>
+<hr/>
+<form method="POST" action="personalhome">
+	<input id='date' type="date"/>
+	<input type='submit' value='确定'/>
+</form>
+<body>
+	<script>
+		function getDate(id) {
+			var obj=document.getElementById(id);
+			var now=new Date();
+			var date=now.toISOString()
+			obj.value=date.substring(0,10)
+			<!-- obj.innerHTML=Date(); -->
+		}
+		getDate('date')
+	</script>
+</body>
+

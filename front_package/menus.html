@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<title>菜单</title>
+<meta charset='utf-8'/>
+<h1>
+	列表显示如下
+</h1>
+<body>
+	<table border='1'>
+		<tr>
+			<th>菜名</th>
+			<th>描述</th>
+			<th>单价</th>
+			<th>总价</th>
+			<th>数量</th>				
+		</tr>
+		<tr>
+			<td>第一道</td>
+			<td>你说得算</td>
+			<td id='0p'>60</td>
+			<td id='0tp'>0</td>
+			<td>
+				<button onclick="subtract('0')">-</button>
+				<input id='0' type="number" value='0' step='1' onchange="onModify(this)"/> 
+				<button onclick="add('0')">+</button>
+			</td>
+		</tr>
+	<table>
+</body>
+<div position='fix'>
+	<p>总价</p>
+	<p id='total'>0</p>
+</div>
+<script>
+	function add(id) {
+		obj=document.getElementById(id);
+		quatity=Number(obj.value);
+		newQuantity=quatity+1;
+		obj.value=String(newQuantity);
+		calPrice(id);
+		calTotal();
+		}
+	function subtract(id) {
+		obj=document.getElementById(id);
+		quatity=Number(obj.value);
+		if (quatity>0) {
+			newQuantity=quatity-1;
+			obj.value=String(newQuantity);
+		}
+		calPrice(id);
+		calTotal();
+	}
+	function calPrice(id) {
+		obj=document.getElementById(id+'tp');
+		quantity=Number(document.getElementById(id).value);
+		price=Number(document.getElementById(id+'p').innerHTML);
+		price=quantity*price;
+		obj.innerHTML=String(price);
+	}
+	function calTotal() {
+		obj=document.getElementById('total');
+		totalPrice=0;
+		for (var i=0;i<=0;i++) {
+			id=String(i);
+			quantity=Number(document.getElementById(id).value);
+			price=Number(document.getElementById(id+'p').innerHTML);
+			totalPrice=totalPrice+quantity*price};
+		obj.innerHTML=String(totalPrice);
+	}
+	function onModify(self) {
+		quantity=self.value;
+		id=self.id
+		calPrice(id)
+		calTotal()
+	}
+		
+</script>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

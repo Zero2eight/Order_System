@@ -1,0 +1,16 @@
+import menus.models as m
+from datetime import datetime as dd
+p=m.Person.objects.all()[0]
+f=m.Food.objects.all()[0]
+q=6
+od=dd.now()
+orl=m.Order_relation(person=p,food=f,quantity=3,order_date=od)
+orl.save()
+
+q=4
+orl2=m.Order_relation(person=p,food=f,quantity=3,order_date=od)
+orl2.save()
+
+q=5
+orl3=m.Order_relation(person=p,food=f,quantity=q,order_date=od)
+orl3.save()
